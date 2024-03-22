@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using System;
-using Unity.VisualScripting;
 
 public class Player : MonoBehaviour
 {
@@ -41,7 +40,11 @@ public class Player : MonoBehaviour
     [SerializeField] Image effect;
     [SerializeField] TMP_Text textCool;
 
-
+    [Header("무기투척")]
+    [SerializeField] Transform trsHand;
+    [SerializeField] GameObject objSword;
+    [SerializeField] Transform trsSword;//칼의 위치와 각도를 가져오는곳
+    [SerializeField] float throwForce;
     private void OnDrawGizmos()
     {
         if (showRay == true)
@@ -73,7 +76,7 @@ public class Player : MonoBehaviour
         checkGravity();
         doDash();
         checkTimers();
-        
+        shootWeapon();
         //ui
         checkUiCoolDown();
     }
@@ -101,13 +104,13 @@ public class Player : MonoBehaviour
         //0일때는 false 1또는 -1트루
         anim.SetBool("Walk", moveDir.x != 0.0f);
 
-        if (moveDir.x != 0.0f) //오른쪽으로갈땐 x값은 1 스케일 x는-1,왼쪽으로갈때  1
-        {
-            Vector3 locScale = transform.localScale;
-            locScale.x = Input.GetAxisRaw("Horizontal") * -1;
-            transform.localScale = locScale;
+        //if (moveDir.x != 0.0f) //오른쪽으로갈땐 x값은 1 스케일 x는-1,왼쪽으로갈때  1
+        //{
+        //    Vector3 locScale = transform.localScale;
+        //    locScale.x = Input.GetAxisRaw("Horizontal") * -1;
+        //    transform.localScale = locScale;
 
-        }
+        //}
 
     }
 
@@ -150,10 +153,41 @@ public class Player : MonoBehaviour
     {
         Vector3 mousPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousPos.z = transform.position.z;
+        Vector3 newPos = mousPos - transform.position;
+        bool isRight = newPos.x >0 ? true : false;
 
-        float angle = Quaternion.FromToRotation(Vector3.up, mousPos - transform.position).eulerAngles.z;
-        Debug.Log(360-angle);
+        if(newPos.x>0&&transform.localScale.x!=-1.0f)
+        {
+            transform.localScale = new Vector3(-1.0f, 1.0f, 1.0f);          
+        }
+        else if (newPos.x<0&&transform.localScale.x!=1.0f)
+        {
+            transform.localScale = new Vector3(1.0f, 1.0f, 1.0f);           
+        }
+
+        Vector3 direction = isRight == true ? Vector3.right : Vector3.left;
+        float angle = Quaternion.FromToRotation(direction, newPos).eulerAngles.z;
+        angle = isRight == true ? -angle : angle;
+
+        //if(isRight ==true)//if문으로도 가능
+        //{
+        //    angle = -angle;
+        //}
+
+        trsHand.localRotation = Quaternion.Euler(0, 0, angle);//rotation은 월드 local은 부모를 기준으로 내 위치를 정할떄
+        //trsHand.localEulerAngles = new Vector3(0, 0, angle);
+        //trsHand.eulerAngles = new Vector3(0, 0, angle);
     }
+
+    private void shootWeapon()
+    {
+        if(Input.GetKeyDown(KeyCode.Mouse0))
+        {
+            GameObject go = Instantiate(objSword, trsSword.position, trsSword.rotation);
+            ThrowWeapon gosc = go.GetComponent<ThrowWeapon>();
+        }
+    }
+
     private void checkGravity()
     {
         if (dashTimer != 0.0f) return;
