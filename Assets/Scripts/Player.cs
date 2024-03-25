@@ -45,6 +45,7 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject objSword;
     [SerializeField] Transform trsSword;//칼의 위치와 각도를 가져오는곳
     [SerializeField] float throwForce;
+    bool isRight;
     private void OnDrawGizmos()
     {
         if (showRay == true)
@@ -154,7 +155,7 @@ public class Player : MonoBehaviour
         Vector3 mousPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mousPos.z = transform.position.z;
         Vector3 newPos = mousPos - transform.position;
-        bool isRight = newPos.x >0 ? true : false;
+        isRight = newPos.x >0 ? true : false;
 
         if(newPos.x>0&&transform.localScale.x!=-1.0f)
         {
@@ -185,6 +186,9 @@ public class Player : MonoBehaviour
         {
             GameObject go = Instantiate(objSword, trsSword.position, trsSword.rotation);
             ThrowWeapon gosc = go.GetComponent<ThrowWeapon>();
+            //addForce에서는 힘을전달해줄때 월드포스값으로 힘을줘야 움직임.
+            Vector2 throwForce = isRight == true ? new Vector2(10f, 0f) : new Vector2(-10f, 0.0f);
+            gosc.SetForce(trsSword.rotation * throwForce, isRight);
         }
     }
 
