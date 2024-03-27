@@ -104,6 +104,7 @@ public class Player : MonoBehaviour
         rigid.velocity = moveDir;
         //0일때는 false 1또는 -1트루
         anim.SetBool("Walk", moveDir.x != 0.0f);
+        anim.SetBool("Jump", moveDir.y !=0f);
 
         //if (moveDir.x != 0.0f) //오른쪽으로갈땐 x값은 1 스케일 x는-1,왼쪽으로갈때  1
         //{
@@ -182,7 +183,8 @@ public class Player : MonoBehaviour
 
     private void shootWeapon()
     {
-        if(Input.GetKeyDown(KeyCode.Mouse0))
+
+        if(Input.GetKeyDown(KeyCode.Mouse0)&&InventoryManager.Instance.isActiveInventory()==false)
         {
             GameObject go = Instantiate(objSword, trsSword.position, trsSword.rotation);
             ThrowWeapon gosc = go.GetComponent<ThrowWeapon>();
@@ -241,7 +243,17 @@ public class Player : MonoBehaviour
                 wallStep = true;
                 break;
             case HitBox.enumHitType.ItemCheck:
+                //지금 닿은 대상이 item이 맞는지
+                ItemSetting item = _coll.GetComponent<ItemSetting>();
 
+                //if(_coll.gameObject.tag =="Item")//테그를 체크하는방법
+                //if(_coll.gameObject.layer==LayerMask.NameToLayer(""))
+                if(item != null)
+                {
+                    item.GetItem();
+                }
+                break;
+            case HitBox.enumHitType.JumpBoardCheck://점프보드 닿았을때
                 break;
         }
     }

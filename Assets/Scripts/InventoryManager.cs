@@ -8,12 +8,12 @@ public class InventoryManager : MonoBehaviour
 
     [SerializeField] GameObject objInventory;
     //[SerializeField] KeyCode keyInventory;
-    List<Transform>listInventory = new List<Transform>();
+    List<Transform> listInventory = new List<Transform>();
     [SerializeField] GameObject objItem;
 
     private void Awake()
     {
-        if(Instance == null)
+        if (Instance == null)
         {
             Instance = this;
         }
@@ -27,7 +27,7 @@ public class InventoryManager : MonoBehaviour
 
     private void initInventory()
     {
-        Transform[]rangeData = objInventory.transform.GetComponentsInChildren<Transform>();
+        Transform[] rangeData = objInventory.transform.GetComponentsInChildren<Transform>();
         listInventory.AddRange(rangeData);
         listInventory.RemoveAt(0);
     }
@@ -48,7 +48,7 @@ public class InventoryManager : MonoBehaviour
 
     private void ActiveInventory()
     {
-        if(Input.GetKeyDown(KeyCode.I))
+        if (Input.GetKeyDown(KeyCode.I))
         {
             objInventory.SetActive(!objInventory.activeSelf);//밑에 코드 간략히
             //if(objInventory.activeSelf==true)
@@ -69,10 +69,10 @@ public class InventoryManager : MonoBehaviour
     private int getEmptyItemSlot()
     {
         int count = listInventory.Count;
-        for(int iNum = 0; iNum < count; ++iNum) 
+        for (int iNum = 0; iNum < count; ++iNum)
         {
             Transform trsSlot = listInventory[iNum];
-            if(trsSlot.childCount==0)
+            if (trsSlot.childCount == 0)
             {
                 return iNum;
             }
@@ -83,15 +83,22 @@ public class InventoryManager : MonoBehaviour
     public bool GetItem(Sprite _spr)
     {
         int slotNum = getEmptyItemSlot();
-        if(slotNum==-1)
+        if (slotNum == -1)
         {
-           return false;//아이템 생성 실패
+            return false;//아이템 생성 실패
         }
 
-        Instantiate(objItem);
+        GameObject go = Instantiate(objItem, listInventory[slotNum]);
+        DragableUi ui = go.GetComponent<DragableUi>();
+        ui.SetItem(_spr);
 
 
         return true;//아이템생성성공
 
+    }
+
+    public bool isActiveInventory()
+    {
+        return objInventory.activeSelf;
     }
 }

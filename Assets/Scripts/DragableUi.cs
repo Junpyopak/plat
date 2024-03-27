@@ -45,7 +45,6 @@ public class DragableUi : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     private void Awake()//내 기능을 정의할때
     {
-        img = GetComponent<Image>();
         rect = GetComponent<RectTransform>();
         CanvasGroup = GetComponent<CanvasGroup>();
     }
@@ -58,6 +57,10 @@ public class DragableUi : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDr
 
     public void SetItem(Sprite _spr)
     {
+        if(img == null)
+        {
+            img = GetComponent<Image>();
+        }
         img.sprite = _spr;
         //img.SetNativeSize();//안에 들어가있는 물체의 사이즈를 자동으로 사이즈 조정할때
     }

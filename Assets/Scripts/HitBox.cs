@@ -8,6 +8,7 @@ public class HitBox : MonoBehaviour
     {
         WallCheck,
         ItemCheck,
+        JumpBoardCheck,
     }
     [SerializeField] private enumHitType hitType;
     Player player;
